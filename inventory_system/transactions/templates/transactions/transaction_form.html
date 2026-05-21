@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}Registrar Movimiento - Inventario{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto;">
+    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem;">
+        <a href="{% url 'transactions:transaction_list' %}" style="color: #4b5563; text-decoration: none; display: inline-flex; align-items: center;">
+            <svg style="width: 24px; height: 24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+        </a>
+        <h2 style="margin: 0; color: #1f2937; font-size: 1.75rem;">Registrar Movimiento</h2>
+    </div>
+
+    <div style="background: #fff; padding: 2rem; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+        <form method="post" id="transaction-form" novalidate>
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div style="background: #fee2e2; border: 1px solid #fca5a5; color: #991b1b; padding: 1rem; border-radius: 6px; margin-bottom: 1.5rem; font-size: 0.95rem;">
+                    {% for error in form.non_field_errors %}
+                        <div>{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div style="margin-bottom: 1.25rem;">
+                <label for="id_product" style="display: block; font-weight: 600; color: #374151; margin-bottom: 0.5rem; font-size: 0.95rem;">Producto</label>
+                {{ form.product }}
+                {% if form.product.errors %}
+                    <div style="color: #dc2626; font-size: 0.85rem; margin-top: 0.25rem;">{{ form.product.errors.as_text }}</div>
+                {% endif %}
+            </div>
+
+            <div style="margin-bottom: 1.25rem;">
+                <label for="id_transaction_type" style="display: block; font-weight: 600; color: #374151; margin-bottom: 0.5rem; font-size: 0.95rem;">Tipo de Transacción</label>
+                {{ form.transaction_type }}
+                {% if form.transaction_type.errors %}
+                    <div style="color: #dc2626; font-size: 0.85rem; margin-top: 0.25rem;">{{ form.transaction_type.errors.as_text }}</div>
+                {% endif %}
+            </div>
+
+            <div style="margin-bottom: 1.25rem;">
+                <label for="id_quantity" style="display: block; font-weight: 600; color: #374151; margin-bottom: 0.5rem; font-size: 0.95rem;">Cantidad</label>
+                {{ form.quantity }}
+                {% if form.quantity.errors %}
+                    <div style="color: #dc2626; font-size: 0.85rem; margin-top: 0.25rem;">{{ form.quantity.errors.as_text }}</div>
+                {% endif %}
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <label for="id_unit_price" style="display: block; font-weight: 600; color: #374151; margin-bottom: 0.5rem; font-size: 0.95rem;">Precio Unitario ($)</label>
+                {{ form.unit_price }}
+                {% if form.unit_price.errors %}
+                    <div style="color: #dc2626; font-size: 0.85rem; margin-top: 0.25rem;">{{ form.unit_price.errors.as_text }}</div>
+                {% endif %}
+            </div>
+
+            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                <button type="submit" class="button" style="margin-top: 0; flex: 1; text-align: center; justify-content: center; cursor: pointer; border: none; font-size: 1rem; font-weight: 600; background: #2563eb; transition: background 0.2s;">
+                    Guardar Transacción
+                </button>
+                <a href="{% url 'transactions:transaction_list' %}" style="flex: 1; display: inline-flex; align-items: center; justify-content: center; border-radius: 6px; border: 1px solid #d1d5db; color: #4b5563; text-decoration: none; font-weight: 600; font-size: 1rem; text-align: center; transition: background 0.2s, color 0.2s;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='transparent'">
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{ product_prices|json_script:"product-prices-data" }}
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const productSelect = document.getElementById("id_product");
+        const priceInput = document.getElementById("id_unit_price");
+        const prices = JSON.parse(document.getElementById("product-prices-data").textContent);
+
+        function updatePrice() {
+            const selectedProductId = productSelect.value;
+            if (selectedProductId && prices[selectedProductId]) {
+                priceInput.value = parseFloat(prices[selectedProductId]).toFixed(2);
+            }
+        }
+
+        // Auto-complete price on product selection change
+        productSelect.addEventListener("change", updatePrice);
+        
+        // Auto-complete price on load if a product is selected but price is empty
+        if (productSelect.value && !priceInput.value) {
+            updatePrice();
+        }
+    });
+</script>
+
+<style>
+    .form-control {
+        width: 100%;
+        padding: 0.65rem 0.8rem;
+        border-radius: 6px;
+        border: 1px solid #d1d5db;
+        box-sizing: border-box;
+        font-size: 0.95rem;
+        color: #1f2937;
+        background-color: #fff;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+    .form-control:focus {
+        border-color: #3b82f6;
+        outline: 0;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Eliminar Proveedor - GestiónStock{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto text-center py-8">
+    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-6">
+        <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+    </div>
+    
+    <h2 class="text-2xl font-bold text-slate-800 mb-2">¿Estás absolutamente seguro?</h2>
+    <p class="text-slate-600 mb-8">Estás a punto de eliminar el proveedor <strong>"{{ object.name }}"</strong>. Esto no se puede deshacer.</p>
+    
+    <form method="post" class="flex flex-col sm:flex-row gap-3 justify-center">
+        {% csrf_token %}
+        <button type="submit" class="inline-flex justify-center items-center px-4 py-2.5 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors w-full sm:w-auto">
+            Sí, eliminar proveedor
+        </button>
+        <a href="{% url 'inventory:supplier_list' %}" class="inline-flex justify-center items-center px-4 py-2.5 border border-slate-300 text-base font-medium rounded-lg text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors shadow-sm w-full sm:w-auto">
+            Cancelar y volver
+        </a>
+    </form>
+</div>
+{% endblock %}
