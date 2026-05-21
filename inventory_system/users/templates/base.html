@@ -80,7 +80,9 @@
                         <a href="{% url 'dashboard' %}" class="px-3 py-2 rounded-md text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-all">Inicio</a>
                         <a href="{% url 'inventory:product_list' %}" class="px-3 py-2 rounded-md text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-all">Productos</a>
                         <a href="{% url 'inventory:category_list' %}" class="px-3 py-2 rounded-md text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-all">Categorías</a>
+                        {% if user.profile.is_admin %}
                         <a href="{% url 'inventory:supplier_list' %}" class="px-3 py-2 rounded-md text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-all">Proveedores</a>
+                        {% endif %}
                         <a href="{% url 'transactions:transaction_list' %}" class="px-3 py-2 rounded-md text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-all">Transacciones</a>
                         <a href="{% url 'reports:dashboard' %}" class="px-3 py-2 rounded-md text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-all">Reportes</a>
                     </nav>

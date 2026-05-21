@@ -30,7 +30,11 @@
                     {% if field.name == 'category' %}
                     <a href="{% url 'inventory:category_create' %}" target="_blank" class="text-xs text-primary-600 hover:text-primary-800 font-normal bg-primary-50 px-2 py-0.5 rounded-full" title="Crear en una nueva pestaña">(+ Nueva Categoría)</a>
                     {% elif field.name == 'supplier' %}
-                    <a href="{% url 'inventory:supplier_create' %}" target="_blank" class="text-xs text-primary-600 hover:text-primary-800 font-normal bg-primary-50 px-2 py-0.5 rounded-full" title="Crear en una nueva pestaña">(+ Nuevo Proveedor)</a>
+                        {% if user.profile.is_admin %}
+                        <a href="{% url 'inventory:supplier_create' %}" target="_blank" class="text-xs text-primary-600 hover:text-primary-800 font-normal bg-primary-50 px-2 py-0.5 rounded-full" title="Crear en una nueva pestaña">(+ Nuevo Proveedor)</a>
+                        {% else %}
+                        <span class="text-xs text-slate-400 font-normal ml-2 italic">(Solicita al admin. si falta un proveedor)</span>
+                        {% endif %}
                     {% endif %}
                 </label>
                 {{ field }}
