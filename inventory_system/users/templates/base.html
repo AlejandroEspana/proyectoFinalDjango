@@ -157,5 +157,90 @@
             &copy; 2026 GestiónStock. Todos los derechos reservados.
         </div>
     </footer>
+
+    <!-- Global Modal Dialog -->
+    <dialog id="global-dialog" class="p-0 rounded-xl shadow-2xl border-0 w-full max-w-2xl backdrop:bg-slate-900/60" style="animation: dialogIn 0.2s ease-out;">
+        <div id="dialog-loading" class="flex items-center justify-center p-12 text-slate-500">
+            <svg class="w-8 h-8 animate-spin text-primary-500" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+            </svg>
+        </div>
+        <div id="dialog-content" class="hidden"></div>
+    </dialog>
+
+    <style>
+        @keyframes dialogIn {
+            from { opacity: 0; transform: scale(0.95) translateY(-10px); }
+            to   { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        #global-dialog::backdrop {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(2px);
+        }
+    </style>
+
+    <script>
+        const dialog = document.getElementById('global-dialog');
+        const dialogContent = document.getElementById('dialog-content');
+        const dialogLoading = document.getElementById('dialog-loading');
+
+        function openModal(url) {
+            // Show loading state and open dialog
+            dialogContent.classList.add('hidden');
+            dialogLoading.classList.remove('hidden');
+            dialog.showModal();
+
+            fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                .then(r => r.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    // Extract the main content block (inside .card or main)
+                    const card = doc.querySelector('main .card');
+                    const mainEl = doc.querySelector('main');
+                    const extracted = card || mainEl;
+
+                    if (extracted) {
+                        dialogContent.innerHTML = `
+                            <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-slate-200">
+                                <h3 class="text-lg font-semibold text-slate-800">` + (doc.querySelector('h2')?.textContent?.trim() || 'Formulario') + `</h3>
+                                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 transition-colors p-1 rounded-md hover:bg-slate-100">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                </button>
+                            </div>
+                            <div class="p-6">` + extracted.innerHTML + `</div>`;
+
+                        // Fix form action to be absolute if it's relative
+                        const form = dialogContent.querySelector('form');
+                        if (form && (!form.action || form.action === window.location.href)) {
+                            form.action = url;
+                        }
+                    } else {
+                        dialogContent.innerHTML = '<p class="p-6 text-red-600">Error al cargar el formulario.</p>';
+                    }
+
+                    dialogLoading.classList.add('hidden');
+                    dialogContent.classList.remove('hidden');
+                })
+                .catch(() => {
+                    dialogContent.innerHTML = '<p class="p-6 text-red-600">Error de conexión. Intenta de nuevo.</p>';
+                    dialogLoading.classList.add('hidden');
+                    dialogContent.classList.remove('hidden');
+                });
+
+            // Close on backdrop click
+            dialog.onclick = function(e) {
+                if (e.target === dialog) closeModal();
+            };
+
+            // Close on Escape key (default behavior of dialog element)
+        }
+
+        function closeModal() {
+            dialog.close();
+            dialogContent.innerHTML = '';
+        }
+    </script>
 </body>
 </html>

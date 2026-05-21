@@ -5,12 +5,12 @@
 {% block content %}
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
     <h2 style="margin: 0; color: #1f2937; font-size: 1.75rem;">Historial de Movimientos</h2>
-    <a href="{% url 'transactions:transaction_create' %}" class="button" style="margin-top: 0; display: inline-flex; align-items: center; gap: 0.5rem; background: #10b981; transition: background 0.2s;">
+    <button onclick="openModal('{% url 'transactions:transaction_create' %}')" class="button" style="margin-top: 0; display: inline-flex; align-items: center; gap: 0.5rem; background: #10b981; transition: background 0.2s;">
         <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
         </svg>
         Registrar Movimiento
-    </a>
+    </button>
 </div>
 
 <form method="GET" style="display: flex; gap: 1rem; margin-bottom: 1.5rem; background: #fff; padding: 1rem; border-radius: 8px; border: 1px solid #e5e7eb; align-items: flex-end;">
