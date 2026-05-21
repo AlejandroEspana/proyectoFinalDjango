@@ -6,9 +6,11 @@ from .views import (
     AuthLogoutView,
     DashboardView,
     OperatorAreaView,
+    RegisterView,
 )
 
 urlpatterns = [
+    path('register/', RegisterView.as_view(), name='register'),
     path('login/', AuthLoginView.as_view(), name='login'),
     path('logout/', AuthLogoutView.as_view(), name='logout'),
     path('', DashboardView.as_view(), name='dashboard'),

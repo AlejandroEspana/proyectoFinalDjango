@@ -1,7 +1,8 @@
 from django.contrib import messages
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import reverse_lazy
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, CreateView
+from django.contrib.auth.forms import UserCreationForm
 
 from .mixins import AdminRequiredMixin, OperatorRequiredMixin, RoleRequiredMixin
 
@@ -40,3 +41,13 @@ class AdminAreaView(AdminRequiredMixin, TemplateView):
 
 class OperatorAreaView(OperatorRequiredMixin, TemplateView):
     template_name = 'users/operator_area.html'
+
+
+class RegisterView(CreateView):
+    template_name = 'users/register.html'
+    form_class = UserCreationForm
+    success_url = reverse_lazy('login')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Cuenta creada exitosamente. Ahora puedes iniciar sesión.')
+        return super().form_valid(form)

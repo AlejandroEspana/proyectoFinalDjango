@@ -8,190 +8,152 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Legacy Styles for compatibility with previous pages -->
     <style>
-        :root {
-            --primary: #2563eb;
-            --primary-hover: #1d4ed8;
-            --background: #f8fafc;
-            --surface: #ffffff;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
-        }
-        body {
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            background-color: var(--background);
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        .navbar {
-            background-color: #0f172a;
-            color: #ffffff;
-            padding: 0.85rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-        .navbar-brand {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #ffffff;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .navbar-menu {
-            display: flex;
-            align-items: center;
-            gap: 1.25rem;
-        }
-        .navbar-link {
-            color: #cbd5e1;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.95rem;
-            transition: color 0.2s ease, transform 0.15s ease;
-        }
-        .navbar-link:hover {
-            color: #ffffff;
-            transform: translateY(-1px);
-        }
-        .navbar-link.active {
-            color: #3b82f6;
-            font-weight: 600;
-        }
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            font-size: 0.9rem;
-            color: #94a3b8;
-        }
-        .logout-btn {
-            background-color: #334155;
-            color: #ffffff;
-            padding: 0.4rem 0.8rem;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 500;
-            transition: background 0.2s ease;
-        }
-        .logout-btn:hover {
-            background-color: #ef4444;
-        }
-        .container {
-            flex-grow: 1;
-            max-width: 1200px;
-            width: 100%;
-            margin: 0 auto;
-            padding: 2rem;
-            box-sizing: border-box;
-        }
-        .messages {
-            margin-bottom: 1.5rem;
-        }
-        .message {
-            padding: 1rem 1.25rem;
-            border-radius: 8px;
-            margin-bottom: 0.75rem;
-            font-size: 0.95rem;
-            font-weight: 500;
-            border: 1px solid transparent;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-            animation: slideIn 0.3s ease;
-        }
-        @keyframes slideIn {
-            from { transform: translateY(-10px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        .message.success {
-            background-color: #ecfdf5;
-            color: #065f46;
-            border-color: #a7f3d0;
-        }
-        .message.error {
-            background-color: #fef2f2;
-            color: #991b1b;
-            border-color: #fca5a5;
-        }
         .card {
-            background: var(--surface);
-            border-radius: 12px;
+            background-color: #ffffff;
+            border-radius: 0.75rem;
             padding: 2rem;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.025);
-            border: 1px solid var(--border);
+            border: 1px solid #e2e8f0;
         }
         .button {
             display: inline-flex;
             align-items: center;
-            padding: 0.6rem 1.2rem;
-            border-radius: 6px;
-            background-color: var(--primary);
+            justify-content: center;
+            padding: 0.5rem 1.25rem;
+            border-radius: 0.375rem;
+            background-color: #2563eb;
             color: #ffffff;
             text-decoration: none;
             font-weight: 600;
             font-size: 0.95rem;
             border: none;
-            transition: background-color 0.2s ease, transform 0.15s ease;
-            box-shadow: 0 2px 4px rgba(37, 99, 235, 0.15);
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            cursor: pointer;
         }
         .button:hover {
-            background-color: var(--primary-hover);
+            background-color: #1d4ed8;
             transform: translateY(-1px);
         }
     </style>
 </head>
-<body>
-    <header class="navbar">
-        <div style="display: flex; align-items: center; gap: 2rem;">
-            <a href="{% url 'dashboard' %}" class="navbar-brand">
-                <svg style="width: 24px; height: 24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                </svg>
-                GestiónStock
-            </a>
-            {% if user.is_authenticated %}
-                <nav class="navbar-menu">
-                    <a href="{% url 'dashboard' %}" class="navbar-link">Inicio</a>
-                    <a href="{% url 'inventory:product_list' %}" class="navbar-link">Productos</a>
-                    <a href="{% url 'inventory:category_list' %}" class="navbar-link">Categorías</a>
-                    <a href="{% url 'inventory:supplier_list' %}" class="navbar-link">Proveedores</a>
-                    <a href="{% url 'transactions:transaction_list' %}" class="navbar-link">Transacciones</a>
-                    <a href="{% url 'reports:dashboard' %}" class="navbar-link">Reportes</a>
-                </nav>
-            {% endif %}
-        </div>
-        <div class="user-info">
-            {% if user.is_authenticated %}
-                <span>
-                    <strong>{{ user.username }}</strong>
-                    <span style="font-size: 0.8rem; background: #334155; padding: 0.2rem 0.5rem; border-radius: 4px; color: #cbd5e1; margin-left: 0.25rem;">
-                        {{ user.profile.get_role_display }}
-                    </span>
-                </span>
-                <a href="{% url 'logout' %}" class="logout-btn">Cerrar sesión</a>
-            {% else %}
-                <a href="{% url 'login' %}" class="navbar-link" style="color: #ffffff;">Iniciar sesión</a>
-            {% endif %}
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+    <!-- Modern Navbar -->
+    <header class="bg-slate-900 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-8">
+                    <a href="{% url 'dashboard' %}" class="flex items-center gap-2 text-xl font-bold tracking-tight text-white hover:text-primary-100 transition-colors">
+                        <svg class="w-7 h-7 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                        </svg>
+                        GestiónStock
+                    </a>
+                    
+                    {% if user.is_authenticated %}
+                    <nav class="hidden md:flex space-x-1">
+                        <a href="{% url 'dashboard' %}" class="px-3 py-2 rounded-md text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-all">Inicio</a>
+                        <a href="{% url 'inventory:product_list' %}" class="px-3 py-2 rounded-md text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-all">Productos</a>
+                        <a href="{% url 'inventory:category_list' %}" class="px-3 py-2 rounded-md text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-all">Categorías</a>
+                        <a href="{% url 'inventory:supplier_list' %}" class="px-3 py-2 rounded-md text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-all">Proveedores</a>
+                        <a href="{% url 'transactions:transaction_list' %}" class="px-3 py-2 rounded-md text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-all">Transacciones</a>
+                        <a href="{% url 'reports:dashboard' %}" class="px-3 py-2 rounded-md text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-all">Reportes</a>
+                    </nav>
+                    {% endif %}
+                </div>
+
+                <div class="flex items-center">
+                    {% if user.is_authenticated %}
+                        <div class="flex items-center gap-4">
+                            <div class="hidden sm:flex flex-col items-end">
+                                <span class="text-sm font-semibold">{{ user.username }}</span>
+                                <span class="text-xs px-2 py-0.5 rounded bg-slate-800 text-primary-100 uppercase tracking-wide border border-slate-700">
+                                    {{ user.profile.get_role_display }}
+                                </span>
+                            </div>
+                            <div class="h-8 w-px bg-slate-700 mx-1 hidden sm:block"></div>
+                            <a href="{% url 'logout' %}" class="text-sm font-medium text-slate-300 hover:text-red-400 transition-colors flex items-center gap-1">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                                Salir
+                            </a>
+                        </div>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 px-4 py-2 rounded-md transition-colors shadow-sm">Iniciar sesión</a>
+                    {% endif %}
+                </div>
+            </div>
         </div>
     </header>
 
-    <main class="container">
-        <div class="messages">
-            {% if messages %}
+    <!-- Main Content Area -->
+    <main class="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Messages System -->
+        {% if messages %}
+            <div class="mb-6 space-y-3">
                 {% for message in messages %}
-                    <div class="message {{ message.tags }}">{{ message }}</div>
+                    <div class="p-4 rounded-lg shadow-sm border flex items-start gap-3 transform transition-all animate-[slideIn_0.3s_ease-out]
+                        {% if message.tags == 'success' %}bg-emerald-50 text-emerald-800 border-emerald-200
+                        {% elif message.tags == 'error' %}bg-red-50 text-red-800 border-red-200
+                        {% else %}bg-blue-50 text-blue-800 border-blue-200{% endif %}">
+                        
+                        {% if message.tags == 'success' %}
+                        <svg class="w-5 h-5 text-emerald-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        {% elif message.tags == 'error' %}
+                        <svg class="w-5 h-5 text-red-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        {% else %}
+                        <svg class="w-5 h-5 text-blue-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        {% endif %}
+                        
+                        <div class="text-sm font-medium">{{ message }}</div>
+                    </div>
                 {% endfor %}
-            {% endif %}
-        </div>
+            </div>
+            <style>
+                @keyframes slideIn {
+                    from { transform: translateY(-10px); opacity: 0; }
+                    to { transform: translateY(0); opacity: 1; }
+                }
+            </style>
+        {% endif %}
+
+        <!-- Content Block: Wraps content in Card if needed, or allows full width -->
+        {% block main_wrapper %}
         <div class="card">
             {% block content %}{% endblock %}
         </div>
+        {% endblock %}
     </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-6 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center text-sm text-slate-500">
+            &copy; 2026 GestiónStock. Todos los derechos reservados.
+        </div>
+    </footer>
 </body>
 </html>
