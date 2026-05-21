@@ -15,7 +15,6 @@
 
     <div style="background: #fff; padding: 2rem; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
         <form method="post" id="transaction-form" novalidate>
-            {% csrf_data = product_prices %}
             {% csrf_token %}
             
             {% if form.non_field_errors %}
