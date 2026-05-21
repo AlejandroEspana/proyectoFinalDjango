@@ -1,41 +1,70 @@
 {% extends 'base.html' %}
+
+{% block title %}Inventario - Productos{% endblock %}
+
 {% block content %}
-<h2>Products</h2>
-<a href="{% url 'inventory:product_create' %}">Create New Product</a>
-<table border="1">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Category</th>
-            <th>Supplier</th>
-            <th>Price</th>
-            <th>Stock</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for product in products %}
-        <tr {% if product.is_low_stock %}style="background-color: #ffcccc;"{% endif %}>
-            <td>{{ product.name }}</td>
-            <td>{{ product.category.name|default:"-" }}</td>
-            <td>{{ product.supplier.name|default:"-" }}</td>
-            <td>{{ product.price }}</td>
-            <td>
-                {{ product.stock }}
-                {% if product.is_low_stock %}
-                <strong>(Low Stock)</strong>
-                {% endif %}
-            </td>
-            <td>
-                <a href="{% url 'inventory:product_update' product.pk %}">Edit</a>
-                <a href="{% url 'inventory:product_delete' product.pk %}">Delete</a>
-            </td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="6">No products found.</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-bold text-slate-800">Directorio de Productos</h2>
+    <a href="{% url 'inventory:product_create' %}" class="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors shadow-sm">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+        Nuevo Producto
+    </a>
+</div>
+
+<div class="overflow-x-auto bg-white border border-slate-200 rounded-lg shadow-sm">
+    <table class="w-full text-left border-collapse">
+        <thead>
+            <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase text-xs tracking-wider">
+                <th class="px-6 py-4 font-semibold">Nombre</th>
+                <th class="px-6 py-4 font-semibold">Categoría</th>
+                <th class="px-6 py-4 font-semibold">Proveedor</th>
+                <th class="px-6 py-4 font-semibold text-right">Precio ($)</th>
+                <th class="px-6 py-4 font-semibold text-right">Stock</th>
+                <th class="px-6 py-4 font-semibold text-center">Acciones</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-200 text-sm">
+            {% for product in products %}
+            <tr class="hover:bg-slate-50 transition-colors {% if product.is_low_stock %}bg-red-50 hover:bg-red-100{% endif %}">
+                <td class="px-6 py-4 font-medium text-slate-900">{{ product.name }}</td>
+                <td class="px-6 py-4 text-slate-600">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800">
+                        {{ product.category.name|default:"Sin categoría" }}
+                    </span>
+                </td>
+                <td class="px-6 py-4 text-slate-600">{{ product.supplier.name|default:"-" }}</td>
+                <td class="px-6 py-4 text-slate-600 text-right">${{ product.price }}</td>
+                <td class="px-6 py-4 text-right">
+                    {% if product.is_low_stock %}
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 gap-1 border border-red-200">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                        {{ product.stock }} (Bajo)
+                    </span>
+                    {% else %}
+                    <span class="text-emerald-700 font-medium">{{ product.stock }}</span>
+                    {% endif %}
+                </td>
+                <td class="px-6 py-4 flex justify-center gap-3">
+                    <a href="{% url 'inventory:product_update' product.pk %}" class="text-primary-600 hover:text-primary-900 font-medium" title="Editar">
+                        Editar
+                    </a>
+                    <a href="{% url 'inventory:product_delete' product.pk %}" class="text-red-600 hover:text-red-900 font-medium" title="Eliminar">
+                        Eliminar
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="px-6 py-12 text-center text-slate-500">
+                    <svg class="mx-auto h-12 w-12 text-slate-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                    </svg>
+                    <p class="text-base font-medium text-slate-900">No se encontraron productos</p>
+                    <p class="mt-1">Empieza creando un nuevo producto en el sistema.</p>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}

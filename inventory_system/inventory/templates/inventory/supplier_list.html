@@ -1,16 +1,51 @@
 {% extends 'base.html' %}
+
+{% block title %}Inventario - Proveedores{% endblock %}
+
 {% block content %}
-<h2>Suppliers</h2>
-<a href="{% url 'inventory:supplier_create' %}">Create New Supplier</a>
-<ul>
-    {% for supplier in suppliers %}
-    <li>
-        {{ supplier.name }} - {{ supplier.email }}
-        <a href="{% url 'inventory:supplier_update' supplier.pk %}">Edit</a>
-        <a href="{% url 'inventory:supplier_delete' supplier.pk %}">Delete</a>
-    </li>
-    {% empty %}
-    <li>No suppliers found.</li>
-    {% endfor %}
-</ul>
+<div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-bold text-slate-800">Directorio de Proveedores</h2>
+    <a href="{% url 'inventory:supplier_create' %}" class="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors shadow-sm">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+        Nuevo Proveedor
+    </a>
+</div>
+
+<div class="overflow-x-auto bg-white border border-slate-200 rounded-lg shadow-sm">
+    <table class="w-full text-left border-collapse">
+        <thead>
+            <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase text-xs tracking-wider">
+                <th class="px-6 py-4 font-semibold">Nombre</th>
+                <th class="px-6 py-4 font-semibold">Contacto</th>
+                <th class="px-6 py-4 font-semibold text-center">Acciones</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-200 text-sm">
+            {% for supplier in suppliers %}
+            <tr class="hover:bg-slate-50 transition-colors">
+                <td class="px-6 py-4 font-medium text-slate-900">{{ supplier.name }}</td>
+                <td class="px-6 py-4 text-slate-600">{{ supplier.contact_info|default:"-" }}</td>
+                <td class="px-6 py-4 flex justify-center gap-3">
+                    <a href="{% url 'inventory:supplier_update' supplier.pk %}" class="text-primary-600 hover:text-primary-900 font-medium" title="Editar">
+                        Editar
+                    </a>
+                    <a href="{% url 'inventory:supplier_delete' supplier.pk %}" class="text-red-600 hover:text-red-900 font-medium" title="Eliminar">
+                        Eliminar
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3" class="px-6 py-12 text-center text-slate-500">
+                    <svg class="mx-auto h-12 w-12 text-slate-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    <p class="text-base font-medium text-slate-900">No se encontraron proveedores</p>
+                    <p class="mt-1">Registra a tu primer proveedor en el sistema.</p>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}
