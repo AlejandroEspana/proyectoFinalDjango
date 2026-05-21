@@ -25,6 +25,28 @@ class TransactionListView(RoleRequiredMixin, ListView):
     allowed_roles = ['admin', 'operator']
     ordering = ['-date']
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        start_date = self.request.GET.get('start_date')
+        end_date = self.request.GET.get('end_date')
+        transaction_type = self.request.GET.get('transaction_type')
+
+        if start_date:
+            queryset = queryset.filter(date__date__gte=start_date)
+        if end_date:
+            queryset = queryset.filter(date__date__lte=end_date)
+        if transaction_type:
+            queryset = queryset.filter(transaction_type=transaction_type)
+            
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['start_date'] = self.request.GET.get('start_date', '')
+        context['end_date'] = self.request.GET.get('end_date', '')
+        context['transaction_type'] = self.request.GET.get('transaction_type', '')
+        return context
+
 class TransactionCreateView(RoleRequiredMixin, CreateView):
     model = Transaction
     form_class = TransactionForm

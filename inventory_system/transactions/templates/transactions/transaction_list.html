@@ -13,6 +13,29 @@
     </a>
 </div>
 
+<form method="GET" style="display: flex; gap: 1rem; margin-bottom: 1.5rem; background: #fff; padding: 1rem; border-radius: 8px; border: 1px solid #e5e7eb; align-items: flex-end;">
+    <div style="flex: 1;">
+        <label for="start_date" style="display: block; font-size: 0.85rem; font-weight: 600; color: #4b5563; margin-bottom: 0.25rem;">Fecha Inicio</label>
+        <input type="date" id="start_date" name="start_date" value="{{ start_date }}" style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; box-sizing: border-box;">
+    </div>
+    <div style="flex: 1;">
+        <label for="end_date" style="display: block; font-size: 0.85rem; font-weight: 600; color: #4b5563; margin-bottom: 0.25rem;">Fecha Fin</label>
+        <input type="date" id="end_date" name="end_date" value="{{ end_date }}" style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; box-sizing: border-box;">
+    </div>
+    <div style="flex: 1;">
+        <label for="transaction_type" style="display: block; font-size: 0.85rem; font-weight: 600; color: #4b5563; margin-bottom: 0.25rem;">Tipo</label>
+        <select id="transaction_type" name="transaction_type" style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; box-sizing: border-box;">
+            <option value="">Todos</option>
+            <option value="buy" {% if transaction_type == 'buy' %}selected{% endif %}>Compra</option>
+            <option value="sell" {% if transaction_type == 'sell' %}selected{% endif %}>Venta</option>
+        </select>
+    </div>
+    <div>
+        <button type="submit" class="button" style="margin-top: 0; padding: 0.5rem 1.5rem; height: 38px;">Filtrar</button>
+        <a href="{% url 'transactions:transaction_list' %}" class="button" style="margin-top: 0; padding: 0.5rem 1.5rem; height: 38px; background: #9ca3af;">Limpiar</a>
+    </div>
+</form>
+
 <div style="overflow-x: auto; background: #fff; border-radius: 8px; border: 1px solid #e5e7eb;">
     <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem;">
         <thead>

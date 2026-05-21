@@ -97,6 +97,18 @@ class ExportTransactionsCSVView(RoleRequiredMixin, View):
         # Obtener todas las transacciones ordenadas cronológicamente por fecha descendiente
         transactions = Transaction.objects.select_related('product', 'product__category', 'user').order_by('-date')
 
+        # Aplicar filtros si existen en la petición GET
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        transaction_type = request.GET.get('transaction_type')
+
+        if start_date:
+            transactions = transactions.filter(date__date__gte=start_date)
+        if end_date:
+            transactions = transactions.filter(date__date__lte=end_date)
+        if transaction_type:
+            transactions = transactions.filter(transaction_type=transaction_type)
+
         for tx in transactions:
             category_name = tx.product.category.name if tx.product.category else 'Sin categoría'
             writer.writerow([
