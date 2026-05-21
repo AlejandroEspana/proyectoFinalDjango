@@ -1,0 +1,42 @@
+from django.contrib import messages
+from django.contrib.auth.views import LoginView, LogoutView
+from django.urls import reverse_lazy
+from django.views.generic import TemplateView
+
+from .mixins import AdminRequiredMixin, OperatorRequiredMixin, RoleRequiredMixin
+
+
+class AuthLoginView(LoginView):
+    template_name = 'users/login.html'
+    redirect_authenticated_user = True
+    success_url = reverse_lazy('dashboard')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Bienvenido de nuevo.')
+        return super().form_valid(form)
+
+
+class AuthLogoutView(LogoutView):
+    next_page = reverse_lazy('login')
+
+    def dispatch(self, request, *args, **kwargs):
+        messages.success(request, 'Has cerrado sesión correctamente.')
+        return super().dispatch(request, *args, **kwargs)
+
+
+class DashboardView(RoleRequiredMixin, TemplateView):
+    template_name = 'users/dashboard.html'
+    allowed_roles = ['admin', 'operator']
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user_role'] = getattr(self.request.user.profile, 'role', 'operator')
+        return context
+
+
+class AdminAreaView(AdminRequiredMixin, TemplateView):
+    template_name = 'users/admin_area.html'
+
+
+class OperatorAreaView(OperatorRequiredMixin, TemplateView):
+    template_name = 'users/operator_area.html'

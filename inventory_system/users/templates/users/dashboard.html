@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}Panel de control{% endblock %}
+
+{% block content %}
+    <h1>Panel de control</h1>
+    <p>Bienvenido {{ user.username }}. Tu rol es <strong>{{ user.profile.get_role_display }}</strong>.</p>
+
+    {% if user.profile.is_admin %}
+        <p>Accede al área de administración para tareas de gestión de usuario y configuración.</p>
+        <a href="{% url 'admin_area' %}" class="button">Ir al área de Admin</a>
+    {% endif %}
+
+    {% if user.profile.is_operator %}
+        <p>Accede al área de operador para gestionar los procesos diarios del inventario.</p>
+        <a href="{% url 'operator_area' %}" class="button">Ir al área de Operador</a>
+    {% endif %}
+{% endblock %}
