@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}Historial de Transacciones - Inventario{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+    <h2 style="margin: 0; color: #1f2937; font-size: 1.75rem;">Historial de Movimientos</h2>
+    <button onclick="openModal('{% url 'transactions:transaction_create' %}')" class="button" style="margin-top: 0; display: inline-flex; align-items: center; gap: 0.5rem; background: #10b981; transition: background 0.2s;">
+        <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        Registrar Movimiento
+    </button>
+</div>
+
+<form method="GET" style="display: flex; gap: 1rem; margin-bottom: 1.5rem; background: #fff; padding: 1rem; border-radius: 8px; border: 1px solid #e5e7eb; align-items: flex-end;">
+    <div style="flex: 1;">
+        <label for="start_date" style="display: block; font-size: 0.85rem; font-weight: 600; color: #4b5563; margin-bottom: 0.25rem;">Fecha Inicio</label>
+        <input type="date" id="start_date" name="start_date" value="{{ start_date }}" style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; box-sizing: border-box;">
+    </div>
+    <div style="flex: 1;">
+        <label for="end_date" style="display: block; font-size: 0.85rem; font-weight: 600; color: #4b5563; margin-bottom: 0.25rem;">Fecha Fin</label>
+        <input type="date" id="end_date" name="end_date" value="{{ end_date }}" style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; box-sizing: border-box;">
+    </div>
+    <div style="flex: 1;">
+        <label for="transaction_type" style="display: block; font-size: 0.85rem; font-weight: 600; color: #4b5563; margin-bottom: 0.25rem;">Tipo</label>
+        <select id="transaction_type" name="transaction_type" style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; box-sizing: border-box;">
+            <option value="">Todos</option>
+            <option value="buy" {% if transaction_type == 'buy' %}selected{% endif %}>Compra</option>
+            <option value="sell" {% if transaction_type == 'sell' %}selected{% endif %}>Venta</option>
+        </select>
+    </div>
+    <div>
+        <button type="submit" class="button" style="margin-top: 0; padding: 0.5rem 1.5rem; height: 38px;">Filtrar</button>
+        <a href="{% url 'transactions:transaction_list' %}" class="button" style="margin-top: 0; padding: 0.5rem 1.5rem; height: 38px; background: #9ca3af;">Limpiar</a>
+    </div>
+</form>
+
+<div style="overflow-x: auto; background: #fff; border-radius: 8px; border: 1px solid #e5e7eb;">
+    <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem;">
+        <thead>
+            <tr style="background: #f9fafb; border-bottom: 1px solid #e5e7eb;">
+                <th style="padding: 1rem; color: #4b5563; font-weight: 600;">Fecha</th>
+                <th style="padding: 1rem; color: #4b5563; font-weight: 600;">Tipo</th>
+                <th style="padding: 1rem; color: #4b5563; font-weight: 600;">Producto</th>
+                <th style="padding: 1rem; color: #4b5563; font-weight: 600; text-align: right;">Cantidad</th>
+                <th style="padding: 1rem; color: #4b5563; font-weight: 600; text-align: right;">P. Unitario</th>
+                <th style="padding: 1rem; color: #4b5563; font-weight: 600; text-align: right;">Total</th>
+                <th style="padding: 1rem; color: #4b5563; font-weight: 600;">Usuario</th>
+                <th style="padding: 1rem; color: #4b5563; font-weight: 600; text-align: center;">Factura</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for tx in transactions %}
+            <tr style="border-bottom: 1px solid #f3f4f6; hover: background-color: #f9fafb; transition: background-color 0.2s;">
+                <td style="padding: 1rem; color: #1f2937;">{{ tx.date|date:"d/m/Y H:i" }}</td>
+                <td style="padding: 1rem;">
+                    {% if tx.transaction_type == 'buy' %}
+                        <span style="display: inline-block; padding: 0.25rem 0.6rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 500; background: #d1fae5; color: #065f46;">
+                            Compra (Entrada)
+                        </span>
+                    {% else %}
+                        <span style="display: inline-block; padding: 0.25rem 0.6rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 500; background: #e0e7ff; color: #3730a3;">
+                            Venta (Salida)
+                        </span>
+                    {% endif %}
+                </td>
+                <td style="padding: 1rem; color: #1f2937; font-weight: 500;">{{ tx.product.name }}</td>
+                <td style="padding: 1rem; color: #4b5563; text-align: right;">{{ tx.quantity }}</td>
+                <td style="padding: 1rem; color: #4b5563; text-align: right;">${{ tx.unit_price }}</td>
+                <td style="padding: 1rem; color: #111827; font-weight: 600; text-align: right;">${{ tx.total_price }}</td>
+                <td style="padding: 1rem; color: #4b5563;">{{ tx.user.username }}</td>
+                <td style="padding: 1rem; text-align: center;">
+                    <a href="{% url 'transactions:transaction_pdf' tx.id %}" style="display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 6px; background: #fee2e2; color: #b91c1c; border: none; text-decoration: none; transition: background 0.2s;" title="Descargar Factura PDF">
+                        <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="8" style="padding: 3rem; text-align: center; color: #9ca3af;">
+                    No se han registrado movimientos todavía.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<style>
+    tbody tr:hover {
+        background-color: #f9fafb;
+    }
+</style>
+{% endblock %}

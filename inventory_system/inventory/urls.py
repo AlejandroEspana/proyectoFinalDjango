@@ -7,6 +7,7 @@ urlpatterns = [
     # Category
     path('categories/', views.CategoryListView.as_view(), name='category_list'),
     path('categories/create/', views.CategoryCreateView.as_view(), name='category_create'),
+    path('categories/create/ajax/', views.CategoryCreateAjaxView.as_view(), name='category_create_ajax'),
     path('categories/<int:pk>/update/', views.CategoryUpdateView.as_view(), name='category_update'),
     path('categories/<int:pk>/delete/', views.CategoryDeleteView.as_view(), name='category_delete'),
 

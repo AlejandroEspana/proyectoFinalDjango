@@ -1,16 +1,51 @@
 {% extends 'base.html' %}
+
+{% block title %}Inventario - Categorías{% endblock %}
+
 {% block content %}
-<h2>Categories</h2>
-<a href="{% url 'inventory:category_create' %}">Create New Category</a>
-<ul>
-    {% for category in categories %}
-    <li>
-        {{ category.name }}
-        <a href="{% url 'inventory:category_update' category.pk %}">Edit</a>
-        <a href="{% url 'inventory:category_delete' category.pk %}">Delete</a>
-    </li>
-    {% empty %}
-    <li>No categories found.</li>
-    {% endfor %}
-</ul>
+<div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-bold text-slate-800">Directorio de Categorías</h2>
+    <button onclick="openModal('{% url 'inventory:category_create' %}')" class="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors shadow-sm">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+        Nueva Categoría
+    </button>
+</div>
+
+<div class="overflow-x-auto bg-white border border-slate-200 rounded-lg shadow-sm">
+    <table class="w-full text-left border-collapse">
+        <thead>
+            <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase text-xs tracking-wider">
+                <th class="px-6 py-4 font-semibold">Nombre</th>
+                <th class="px-6 py-4 font-semibold">Descripción</th>
+                <th class="px-6 py-4 font-semibold text-center">Acciones</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-200 text-sm">
+            {% for category in categories %}
+            <tr class="hover:bg-slate-50 transition-colors">
+                <td class="px-6 py-4 font-medium text-slate-900">{{ category.name }}</td>
+                <td class="px-6 py-4 text-slate-600">{{ category.description|default:"-" }}</td>
+                <td class="px-6 py-4 flex justify-center gap-3">
+                    <button onclick="openModal('{% url 'inventory:category_update' category.pk %}')" class="text-primary-600 hover:text-primary-900 font-medium" title="Editar">
+                        Editar
+                    </button>
+                    <a href="{% url 'inventory:category_delete' category.pk %}" class="text-red-600 hover:text-red-900 font-medium" title="Eliminar">
+                        Eliminar
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3" class="px-6 py-12 text-center text-slate-500">
+                    <svg class="mx-auto h-12 w-12 text-slate-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                    <p class="text-base font-medium text-slate-900">No se encontraron categorías</p>
+                    <p class="mt-1">Crea tu primera categoría para organizar tus productos.</p>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}

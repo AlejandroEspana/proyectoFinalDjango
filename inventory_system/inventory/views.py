@@ -1,73 +1,96 @@
 from django.urls import reverse_lazy
+from django.http import JsonResponse
+from django.views import View
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from users.mixins import RoleRequiredMixin, AdminRequiredMixin
 from .models import Category, Supplier, Product
 from .forms import CategoryForm, SupplierForm, ProductForm
 
 # CATEGORY VIEWS
-class CategoryListView(ListView):
+class CategoryListView(RoleRequiredMixin, ListView):
+    allowed_roles = ['admin', 'operator']
     model = Category
     template_name = 'inventory/category_list.html'
     context_object_name = 'categories'
 
-class CategoryCreateView(CreateView):
+class CategoryCreateView(RoleRequiredMixin, CreateView):
+    allowed_roles = ['admin', 'operator']
     model = Category
     form_class = CategoryForm
     template_name = 'inventory/category_form.html'
     success_url = reverse_lazy('inventory:category_list')
 
-class CategoryUpdateView(UpdateView):
+class CategoryUpdateView(RoleRequiredMixin, UpdateView):
+    allowed_roles = ['admin', 'operator']
     model = Category
     form_class = CategoryForm
     template_name = 'inventory/category_form.html'
     success_url = reverse_lazy('inventory:category_list')
 
-class CategoryDeleteView(DeleteView):
+class CategoryDeleteView(RoleRequiredMixin, DeleteView):
+    allowed_roles = ['admin', 'operator']
     model = Category
     template_name = 'inventory/category_confirm_delete.html'
     success_url = reverse_lazy('inventory:category_list')
 
-# SUPPLIER VIEWS
-class SupplierListView(ListView):
+# SUPPLIER VIEWS (Admin Only)
+class SupplierListView(AdminRequiredMixin, ListView):
     model = Supplier
     template_name = 'inventory/supplier_list.html'
     context_object_name = 'suppliers'
 
-class SupplierCreateView(CreateView):
+class SupplierCreateView(AdminRequiredMixin, CreateView):
     model = Supplier
     form_class = SupplierForm
     template_name = 'inventory/supplier_form.html'
     success_url = reverse_lazy('inventory:supplier_list')
 
-class SupplierUpdateView(UpdateView):
+class SupplierUpdateView(AdminRequiredMixin, UpdateView):
     model = Supplier
     form_class = SupplierForm
     template_name = 'inventory/supplier_form.html'
     success_url = reverse_lazy('inventory:supplier_list')
 
-class SupplierDeleteView(DeleteView):
+class SupplierDeleteView(AdminRequiredMixin, DeleteView):
     model = Supplier
     template_name = 'inventory/supplier_confirm_delete.html'
     success_url = reverse_lazy('inventory:supplier_list')
 
 # PRODUCT VIEWS
-class ProductListView(ListView):
+class ProductListView(RoleRequiredMixin, ListView):
+    allowed_roles = ['admin', 'operator']
     model = Product
     template_name = 'inventory/product_list.html'
     context_object_name = 'products'
 
-class ProductCreateView(CreateView):
+class ProductCreateView(RoleRequiredMixin, CreateView):
+    allowed_roles = ['admin', 'operator']
     model = Product
     form_class = ProductForm
     template_name = 'inventory/product_form.html'
     success_url = reverse_lazy('inventory:product_list')
 
-class ProductUpdateView(UpdateView):
+class ProductUpdateView(RoleRequiredMixin, UpdateView):
+    allowed_roles = ['admin', 'operator']
     model = Product
     form_class = ProductForm
     template_name = 'inventory/product_form.html'
     success_url = reverse_lazy('inventory:product_list')
 
-class ProductDeleteView(DeleteView):
+class ProductDeleteView(RoleRequiredMixin, DeleteView):
+    allowed_roles = ['admin', 'operator']
     model = Product
     template_name = 'inventory/product_confirm_delete.html'
     success_url = reverse_lazy('inventory:product_list')
+
+
+# AJAX: Create category inline from product form
+class CategoryCreateAjaxView(RoleRequiredMixin, View):
+    allowed_roles = ['admin', 'operator']
+
+    def post(self, request, *args, **kwargs):
+        form = CategoryForm(request.POST)
+        if form.is_valid():
+            category = form.save()
+            return JsonResponse({'success': True, 'id': category.pk, 'name': category.name})
+        return JsonResponse({'success': False, 'errors': form.errors}, status=400)

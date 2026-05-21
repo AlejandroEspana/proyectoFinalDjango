@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard e Informes - Inventario{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h2 style="margin: 0; color: #1f2937; font-size: 1.75rem;">Dashboard de Reportes</h2>
+    <a href="{% url 'reports:export_csv' %}" class="button" style="margin-top: 0; background: #2563eb; display: inline-flex; align-items: center; gap: 0.5rem; transition: background 0.2s;">
+        <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+        </svg>
+        Exportar Historial (CSV)
+    </a>
+</div>
+
+<!-- KPI Cards -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem;">
+    <!-- Card 1: Ventas -->
+    <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 1rem;">
+        <div style="background: #eff6ff; color: #2563eb; width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+            <svg style="width: 24px; height: 24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+        </div>
+        <div>
+            <div style="color: #6b7280; font-size: 0.85rem; font-weight: 500; text-transform: uppercase;">Total Ventas</div>
+            <div style="color: #111827; font-size: 1.5rem; font-weight: 700; margin-top: 0.25rem;">${{ total_sales_value|floatformat:2 }}</div>
+        </div>
+    </div>
+
+    <!-- Card 2: Compras -->
+    <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 1rem;">
+        <div style="background: #ecfdf5; color: #10b981; width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+            <svg style="width: 24px; height: 24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+            </svg>
+        </div>
+        <div>
+            <div style="color: #6b7280; font-size: 0.85rem; font-weight: 500; text-transform: uppercase;">Total Compras</div>
+            <div style="color: #111827; font-size: 1.5rem; font-weight: 700; margin-top: 0.25rem;">${{ total_buys_value|floatformat:2 }}</div>
+        </div>
+    </div>
+
+    <!-- Card 3: Cantidad Productos -->
+    <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 1rem;">
+        <div style="background: #fdf2f8; color: #db2777; width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+            <svg style="width: 24px; height: 24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+            </svg>
+        </div>
+        <div>
+            <div style="color: #6b7280; font-size: 0.85rem; font-weight: 500; text-transform: uppercase;">Productos</div>
+            <div style="color: #111827; font-size: 1.5rem; font-weight: 700; margin-top: 0.25rem;">{{ total_products_count }}</div>
+        </div>
+    </div>
+
+    <!-- Card 4: Bajo Stock -->
+    <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 1rem;">
+        <div style="background: {% if low_stock_count > 0 %}#fef2f2{% else %}#f0fdf4{% endif %}; color: {% if low_stock_count > 0 %}#dc2626{% else %}#16a34a{% endif %}; width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+            <svg style="width: 24px; height: 24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
+        </div>
+        <div>
+            <div style="color: #6b7280; font-size: 0.85rem; font-weight: 500; text-transform: uppercase;">Bajo Stock</div>
+            <div style="color: {% if low_stock_count > 0 %}#dc2626{% else %}#111827{% endif %}; font-size: 1.5rem; font-weight: 700; margin-top: 0.25rem;">{{ low_stock_count }}</div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Grid -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 2rem;">
+    <!-- Chart 1: Productos Más Vendidos -->
+    <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); display: flex; flex-direction: column;">
+        <h3 style="margin-top: 0; margin-bottom: 1.25rem; color: #374151; font-size: 1.15rem; font-weight: 600;">Top 5 Productos Más Vendidos</h3>
+        <div style="position: relative; flex-grow: 1; min-height: 280px; display: flex; align-items: center; justify-content: center;">
+            <canvas id="topProductsChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Chart 2: Stock por Categoría -->
+    <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); display: flex; flex-direction: column;">
+        <h3 style="margin-top: 0; margin-bottom: 1.25rem; color: #374151; font-size: 1.15rem; font-weight: 600;">Stock Actual por Categoría</h3>
+        <div style="position: relative; flex-grow: 1; min-height: 280px; display: flex; align-items: center; justify-content: center;">
+            <canvas id="categoryStockChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Cargar datos como JSON seguros para JS -->
+{{ top_product_labels|json_script:"top-product-labels-data" }}
+{{ top_product_data|json_script:"top-product-data-data" }}
+{{ category_labels|json_script:"category-labels-data" }}
+{{ category_data|json_script:"category-data-data" }}
+
+<!-- Incluir Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Leer datos inyectados por Django
+        const topLabels = JSON.parse(document.getElementById("top-product-labels-data").textContent);
+        const topData = JSON.parse(document.getElementById("top-product-data-data").textContent);
+        const catLabels = JSON.parse(document.getElementById("category-labels-data").textContent);
+        const catData = JSON.parse(document.getElementById("category-data-data").textContent);
+
+        // 1. Gráfico Productos Más Vendidos (Bar Chart)
+        const ctxTop = document.getElementById('topProductsChart').getContext('2d');
+        
+        if (topLabels.length === 0) {
+            ctxTop.canvas.parentNode.innerHTML = "<div style='color: #9ca3af;'>No hay datos de ventas registradas.</div>";
+        } else {
+            new Chart(ctxTop, {
+                type: 'bar',
+                data: {
+                    labels: topLabels,
+                    datasets: [{
+                        label: 'Cantidad Vendida',
+                        data: topData,
+                        backgroundColor: 'rgba(59, 130, 246, 0.75)', // Indigo/Blue
+                        borderColor: 'rgb(59, 130, 246)',
+                        borderWidth: 1.5,
+                        borderRadius: 6,
+                        barThickness: 32
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#f3f4f6' },
+                            ticks: { stepSize: 1, color: '#6b7280', font: { family: 'inherit' } }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#6b7280', font: { family: 'inherit' } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 2. Gráfico Stock por Categoría (Doughnut Chart)
+        const ctxCat = document.getElementById('categoryStockChart').getContext('2d');
+        
+        if (catLabels.length === 0) {
+            ctxCat.canvas.parentNode.innerHTML = "<div style='color: #9ca3af;'>No hay productos registrados en inventario.</div>";
+        } else {
+            new Chart(ctxCat, {
+                type: 'doughnut',
+                data: {
+                    labels: catLabels,
+                    datasets: [{
+                        data: catData,
+                        backgroundColor: [
+                            'rgba(16, 185, 129, 0.75)',  // Esmeralda
+                            'rgba(99, 102, 241, 0.75)',  // Indigo
+                            'rgba(245, 158, 11, 0.75)',  // Ámbar
+                            'rgba(239, 68, 68, 0.75)',   // Rojo
+                            'rgba(139, 92, 246, 0.75)',  // Violeta
+                            'rgba(14, 165, 233, 0.75)'   // Celeste
+                        ],
+                        borderColor: '#ffffff',
+                        borderWidth: 2,
+                        hoverOffset: 12
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#4b5563',
+                                padding: 16,
+                                font: { size: 12, family: 'inherit' }
+                            }
+                        }
+                    },
+                    cutout: '65%'
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}
