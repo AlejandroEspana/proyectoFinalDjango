@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Products</h2>
+<a href="{% url 'inventory:product_create' %}">Create New Product</a>
+<table border="1">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Supplier</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for product in products %}
+        <tr {% if product.is_low_stock %}style="background-color: #ffcccc;"{% endif %}>
+            <td>{{ product.name }}</td>
+            <td>{{ product.category.name|default:"-" }}</td>
+            <td>{{ product.supplier.name|default:"-" }}</td>
+            <td>{{ product.price }}</td>
+            <td>
+                {{ product.stock }}
+                {% if product.is_low_stock %}
+                <strong>(Low Stock)</strong>
+                {% endif %}
+            </td>
+            <td>
+                <a href="{% url 'inventory:product_update' product.pk %}">Edit</a>
+                <a href="{% url 'inventory:product_delete' product.pk %}">Delete</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6">No products found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
