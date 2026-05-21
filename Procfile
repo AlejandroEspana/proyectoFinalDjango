@@ -1,2 +1,1 @@
-release: python inventory_system/manage.py migrate
-web: gunicorn inventory_system.wsgi:application
+web: gunicorn inventory_system.wsgi:application --log-file -
