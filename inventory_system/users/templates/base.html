@@ -169,12 +169,44 @@
         <div id="dialog-content" class="hidden"></div>
     </dialog>
 
+    <!-- Category Quick-Create Mini-Dialog (always present in DOM) -->
+    <dialog id="category-mini-dialog" class="p-0 rounded-xl shadow-2xl border-0 w-full max-w-sm" style="animation: dialogIn 0.15s ease-out;">
+        <div class="flex items-center justify-between px-5 pt-5 pb-4 border-b border-slate-200">
+            <h3 class="text-base font-semibold text-slate-800">Nueva Categoría</h3>
+            <button type="button" onclick="closeCategoryModal()" class="text-slate-400 hover:text-slate-600 p-1 rounded-md hover:bg-slate-100 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <div class="p-5">
+            <div id="cat-error" class="hidden bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-lg text-sm mb-4"></div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Nombre</label>
+                    <input type="text" id="new-cat-name" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="Nombre de la categoría">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Descripción (opcional)</label>
+                    <textarea id="new-cat-desc" rows="2" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="Descripción breve"></textarea>
+                </div>
+            </div>
+            <div class="flex gap-3 mt-5">
+                <button type="button" onclick="saveCategoryAjax()" class="flex-1 bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg text-sm transition-colors">
+                    Crear Categoría
+                </button>
+                <button type="button" onclick="closeCategoryModal()" class="flex-1 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 font-medium py-2 px-4 rounded-lg text-sm transition-colors">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </dialog>
+
     <style>
         @keyframes dialogIn {
             from { opacity: 0; transform: scale(0.95) translateY(-10px); }
             to   { opacity: 1; transform: scale(1) translateY(0); }
         }
-        #global-dialog::backdrop {
+        #global-dialog::backdrop,
+        #category-mini-dialog::backdrop {
             background: rgba(15, 23, 42, 0.6);
             backdrop-filter: blur(2px);
         }
@@ -186,7 +218,6 @@
         const dialogLoading = document.getElementById('dialog-loading');
 
         function openModal(url) {
-            // Show loading state and open dialog
             dialogContent.classList.add('hidden');
             dialogLoading.classList.remove('hidden');
             dialog.showModal();
@@ -196,14 +227,13 @@
                 .then(html => {
                     const parser = new DOMParser();
                     const doc = parser.parseFromString(html, 'text/html');
-                    // Extract the main content block (inside .card or main)
                     const card = doc.querySelector('main .card');
                     const mainEl = doc.querySelector('main');
                     const extracted = card || mainEl;
 
                     if (extracted) {
-                        dialogContent.innerHTML = `
-                            <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-slate-200">
+                        dialogContent.innerHTML =
+                            `<div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-slate-200">
                                 <h3 class="text-lg font-semibold text-slate-800">` + (doc.querySelector('h2')?.textContent?.trim() || 'Formulario') + `</h3>
                                 <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 transition-colors p-1 rounded-md hover:bg-slate-100">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -211,11 +241,19 @@
                             </div>
                             <div class="p-6">` + extracted.innerHTML + `</div>`;
 
-                        // Fix form action to be absolute if it's relative
+                        // Fix form action
                         const form = dialogContent.querySelector('form');
                         if (form && (!form.action || form.action === window.location.href)) {
                             form.action = url;
                         }
+
+                        // Re-execute any <script> tags injected via innerHTML (browsers block these by default)
+                        dialogContent.querySelectorAll('script').forEach(oldScript => {
+                            const newScript = document.createElement('script');
+                            newScript.textContent = oldScript.textContent;
+                            document.body.appendChild(newScript);
+                            oldScript.remove();
+                        });
                     } else {
                         dialogContent.innerHTML = '<p class="p-6 text-red-600">Error al cargar el formulario.</p>';
                     }
@@ -229,17 +267,84 @@
                     dialogContent.classList.remove('hidden');
                 });
 
-            // Close on backdrop click
             dialog.onclick = function(e) {
                 if (e.target === dialog) closeModal();
             };
-
-            // Close on Escape key (default behavior of dialog element)
         }
 
         function closeModal() {
             dialog.close();
             dialogContent.innerHTML = '';
+        }
+
+        // ── Category Mini-Dialog ────────────────────────────────────────────
+        const catDialog = document.getElementById('category-mini-dialog');
+        // URL injected from Django template; fallback empty
+        let _catAjaxUrl = '';
+
+        function openCategoryModal(ajaxUrl) {
+            if (ajaxUrl) _catAjaxUrl = ajaxUrl;
+            document.getElementById('new-cat-name').value = '';
+            document.getElementById('new-cat-desc').value = '';
+            document.getElementById('cat-error').classList.add('hidden');
+            catDialog.showModal();
+            catDialog.onclick = (e) => { if (e.target === catDialog) closeCategoryModal(); };
+        }
+
+        function closeCategoryModal() {
+            catDialog.close();
+        }
+
+        function saveCategoryAjax() {
+            const name = document.getElementById('new-cat-name').value.trim();
+            const desc = document.getElementById('new-cat-desc').value.trim();
+            const errorEl = document.getElementById('cat-error');
+
+            if (!name) {
+                errorEl.textContent = 'El nombre de la categoría es obligatorio.';
+                errorEl.classList.remove('hidden');
+                return;
+            }
+
+            // Get CSRF token from whatever form is currently active in the global dialog
+            const csrf = document.querySelector('#dialog-content [name=csrfmiddlewaretoken]')
+                      || document.querySelector('[name=csrfmiddlewaretoken]');
+            if (!csrf) {
+                errorEl.textContent = 'Error de seguridad: recarga la página.';
+                errorEl.classList.remove('hidden');
+                return;
+            }
+
+            fetch(_catAjaxUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': csrf.value,
+                },
+                body: new URLSearchParams({ name: name, description: desc })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    // Find the category <select> inside the global modal and add the new option
+                    const select = document.querySelector('#dialog-content #id_category')
+                                || document.getElementById('id_category');
+                    if (select) {
+                        const opt = new Option(data.name, data.id, true, true);
+                        select.appendChild(opt);
+                        select.value = data.id;
+                    }
+                    closeCategoryModal();
+                } else {
+                    const msgs = Object.values(data.errors).flat().join(' ');
+                    errorEl.textContent = msgs;
+                    errorEl.classList.remove('hidden');
+                }
+            })
+            .catch(() => {
+                errorEl.textContent = 'Error de conexión. Intenta de nuevo.';
+                errorEl.classList.remove('hidden');
+            });
         }
     </script>
 </body>
