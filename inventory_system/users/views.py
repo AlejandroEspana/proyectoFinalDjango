@@ -32,6 +32,18 @@ class DashboardView(RoleRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['user_role'] = getattr(self.request.user.profile, 'role', 'operator')
+        context['features'] = [
+            'Login y control de roles (Admin / Operador)',
+            'CRUD de productos, categorías y proveedores',
+            'Registro de compras y ventas',
+            'Control automático del stock',
+            'Alertas por bajo inventario',
+            'Panel de reportes interactivo',
+            'Gráficos: productos más vendidos y stock por categoría',
+            'Exportación de reportes a CSV (Excel)',
+            'Historial completo de movimientos',
+            'Generación de facturas en PDF',
+        ]
         return context
 
 

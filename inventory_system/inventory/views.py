@@ -1,4 +1,6 @@
 from django.urls import reverse_lazy
+from django.http import JsonResponse
+from django.views import View
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from users.mixins import RoleRequiredMixin, AdminRequiredMixin
 from .models import Category, Supplier, Product
@@ -80,3 +82,15 @@ class ProductDeleteView(RoleRequiredMixin, DeleteView):
     model = Product
     template_name = 'inventory/product_confirm_delete.html'
     success_url = reverse_lazy('inventory:product_list')
+
+
+# AJAX: Create category inline from product form
+class CategoryCreateAjaxView(RoleRequiredMixin, View):
+    allowed_roles = ['admin', 'operator']
+
+    def post(self, request, *args, **kwargs):
+        form = CategoryForm(request.POST)
+        if form.is_valid():
+            category = form.save()
+            return JsonResponse({'success': True, 'id': category.pk, 'name': category.name})
+        return JsonResponse({'success': False, 'errors': form.errors}, status=400)
